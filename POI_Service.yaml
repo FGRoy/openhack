@@ -1,0 +1,45 @@
+apiVersion: v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: POI
+spec:
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: POI
+    spec:
+      containers:
+      - name: POI
+        image: registrydam3295.azurecr.io/tripinsights/poi:1.0
+        ports:
+        - containerPort: 80
+          name: poi-80
+        env:
+          - name: SQL_USER
+            value: "sqladmindAm3295"
+          - name: SQL_PASSWORD
+            value: "fI9go8Af8"
+          - name: SQL_SERVER
+            value: "sqlserverdam3295.database.windows.net"
+          - name: SQL_DBNAME
+            value: "mydrivingDB" 
+          - name: ASPNETCORE_ENVIRONMENT
+            value: "Development"
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: POI-Service
+spec:
+  selector:
+    app: POI
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
